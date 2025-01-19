@@ -1,25 +1,33 @@
-using InjectingFunctions.ModuleOne;
 using Microsoft.Extensions.Hosting;
 
 namespace InjectingFunctions;
 
 public class Worker : BackgroundService
 {
-    public Worker(IEnumerable<StringHandler> processorOneDelegates)
-    {
-        // var xxx = processorOneDelegate("AAA");
+    private readonly IEnumerable<IStrategy> _strategies;
 
-        foreach (var processor in processorOneDelegates)
-        {
-            Console.WriteLine(processor("AAA"));
-        }
+    public Worker(IEnumerable<IStrategy> strategies)
+    {
+        this._strategies = strategies;
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
 
+        var objectRecords = new[] 
+        {
+            new ObjectRecord(Guid.NewGuid(), "Paulo", ObjectType.Client),
+            new ObjectRecord(Guid.NewGuid(), "Isabel", ObjectType.Supplier),
+        }
+        .ToList();
 
-        // Console.WriteLine("AAA".ProcessObject());
+        objectRecords.ForEach(record => 
+        {
+            var strategy = this._strategies
+                .Single(strategy => strategy.CanHandle(record));
+
+            Console.WriteLine(record.Process(strategy.Handle));
+        });
 
         return Task.CompletedTask;
     }

@@ -12,4 +12,11 @@ public static class ServiceCollectionExtensions
         return serviceCollection.AddSingleton(provider =>
             getDelegateFromSource(provider.GetService<TSource>()));
     }
+
+    public static IEnumerable<T> ForEach<T>(IEnumerable<T> xs, Action<T> f) 
+    {
+        foreach (var x in xs) {
+            f(x); yield return x;
+    }
+}
 }

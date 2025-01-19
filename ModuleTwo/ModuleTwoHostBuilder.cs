@@ -1,3 +1,4 @@
+using InjectingFunctions.ModuleTwo.StrategyFunctions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -9,6 +10,8 @@ public static class ModuleTwoHostBuilder
     {
         builder.ConfigureServices((hostContext, services) => 
         {   
+            services.AddTransient<IStrategy, ModuleTwoStrategy>();
+
             services.AddSingleton<ModuleTwoProcessor>();
             services.RegisterDelegate<ModuleTwoProcessor, StringHandler>(x => x.ProcessorTwo);
         });

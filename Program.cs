@@ -26,8 +26,16 @@ public class Program
             .RegisterModuleTwo();
 }
 
-
-public static class Xxx
+public record ObjectRecord(Guid Id, string Name, ObjectType ObjectType)
 {
-    public static string ReturnSomething(string s) => s;
+    public string Process(Func<ObjectRecord, string> processor)
+    {
+        return $"{Name} ({processor(this)})";
+    }
+}
+
+public enum ObjectType 
+{
+    Client,
+    Supplier
 }
