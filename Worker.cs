@@ -1,3 +1,5 @@
+
+using System.IO.Compression;
 using Microsoft.Extensions.Hosting;
 
 namespace InjectingFunctions;
@@ -21,13 +23,14 @@ public class Worker : BackgroundService
         }
         .ToList();
 
-        objectRecords.ForEach(record => 
-        {
-            var strategy = this._strategies
-                .Single(strategy => strategy.CanHandle(record));
+        objectRecords
+            .SelectMany(record => this._strategies
+                .Where(strategy => strategy.CanHandle(record))
+                .Select(strategy => new { Record = record, Strategy = strategy }))
+            .ToList()
+            .ForEach(x => Console.WriteLine(x.Strategy.Handle(x.Record)));
 
-            Console.WriteLine(record.Process(strategy.Handle));
-        });
+
 
         return Task.CompletedTask;
     }
